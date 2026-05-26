@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Wishlist | Homely Exquisite Furniture</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"><link rel="stylesheet" href="style.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase.js"></script></head>
+<body>
+<header><div class="container"><nav><div class="logo">Homely<span>Exquisite</span></div><button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button><ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="shop.html">Shop</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="wishlist.html" class="active">Wishlist</a></li><li><a href="#" id="logoutBtn">Logout</a></li><li class="cart-icon"><a href="#"><i class="fas fa-shopping-cart"></i> Cart <span id="cartCount">0</span></a></li></ul></nav></div></header>
+<main><div class="container"><h1 style="text-align:center">My <span class="gold-text">Wishlist</span></h1><div class="gold-border-center"></div><div class="products-grid" id="wishlistGrid"><p>Loading...</p></div></div></main>
+<footer><div class="container"><div class="footer-content"><div class="footer-col"><div class="logo">Homely<span>Exquisite</span></div><p>Expression of style & beauty — established 18 years ago.</p></div><div class="footer-col"><h4>Quick Links</h4><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="dashboard.html">Dashboard</a></div><div class="footer-col"><h4>Contact</h4><a href="tel:07065229950">0706 522 9950</a><a href="tel:08084202903">0808 420 2903</a></div></div><div class="copyright"><p>© 2025 Homely Exquisite Furniture. 18 years of excellence.</p></div></div></footer>
+<script>
+async function loadWishlist() {
+    const items = await getWishlist();
+    const grid = document.getElementById('wishlistGrid');
+    if (items.length === 0) { grid.innerHTML = '<p>Your wishlist is empty.</p>'; return; }
+    grid.innerHTML = items.map(i => `<div class="product-card"><div class="product-img" style="background-image:url('${i.products.image_url || 'https://placehold.co/400x300/0A1128/D4AF37?text=No+Image'}')"></div><div class="product-info"><h3>${i.products.name}</h3><div class="price">₦${i.products.price.toLocaleString()}</div><button class="btn" onclick="addToCartAndRedirect(${i.products.id})">Add to Cart</button><button class="btn btn-danger" onclick="removeAndReload(${i.products.id})">Remove</button></div></div>`).join('');
+}
+window.addToCartAndRedirect = async (id) => { await addToCart(id); window.location.href = 'dashboard.html'; };
+window.removeAndReload = async (id) => { await removeFromWishlist(id); loadWishlist(); };
+document.getElementById('logoutBtn').onclick = (e) => { e.preventDefault(); logOut(); };
+document.getElementById('menuBtn').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('show'));
+loadWishlist(); updateCartCountDisplay();
+</script>
+</body>
+</html>
