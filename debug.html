@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head><title>Signup Debug</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+<body>
+<h2>Signup Debug - Watch the log below</h2>
+<pre id="log" style="background:#eee; padding:10px; white-space:pre-wrap; font-family:monospace;"></pre>
+<input id="email" placeholder="Email" style="width:250px"><br>
+<input id="pass" type="password" placeholder="Password" style="width:250px"><br>
+<button id="btn">Sign Up</button>
+
+<script>
+const SUPABASE_URL = 'https://trswmahvppkvpwhtbiyw.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyc3dtYWh2cHBrdnB3aHRiaXl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTIwNzAsImV4cCI6MjA5NTEyODA3MH0.fgBA1qFZwn9KEYc78Odwj83j9Pq61igbStRYYNRwywc';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const log = document.getElementById('log');
+function addLog(msg) {
+    log.innerText += new Date().toLocaleTimeString() + ': ' + msg + '\n';
+}
+document.getElementById('btn').onclick = async () => {
+    addLog('Button clicked');
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('pass').value;
+    if (!email || !password) { addLog('Missing email or password'); return; }
+    addLog('Calling supabase.auth.signUp for ' + email);
+    try {
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        addLog('Signup success, user.id = ' + data.user.id);
+        addLog('Attempting to insert profile...');
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([{ id: data.user.id, email, full_name: 'Debug User', is_admin: false }]);
+        if (profileError) addLog('PROFILE INSERT ERROR: ' + profileError.message);
+        else addLog('Profile inserted successfully');
+        addLog('Redirecting to login.html');
+        window.location.href = 'login.html';
+    } catch (err) {
+        addLog('ERROR: ' + err.message);
+    }
+};
+</script>
+</body>
+</html>
