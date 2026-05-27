@@ -3,122 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up | Homely Exquisite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <title>Signup Test - No Profile</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial; background: #0A1128; color: white; padding: 2rem; }
+        input, button { display: block; margin: 1rem 0; padding: 0.5rem; width: 250px; }
+        .error { color: #ff8888; }
+        .success { color: #88ff88; }
+    </style>
 </head>
 <body>
-<header><div class="container"><nav><div class="logo">Homely<span>Exquisite</span></div><button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button><ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="shop.html">Shop</a></li><li><a href="login.html">Login</a></li><li><a href="signup.html" class="active">Sign Up</a></li></ul></nav></div></header>
+    <h1>Signup Test (Auth only)</h1>
+    <div id="message"></div>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button id="signupBtn">Sign Up</button>
 
-<main>
-    <div class="container">
-        <div class="form-container">
-            <h2 style="text-align:center">Create <span class="gold-text">Account</span></h2>
-            <div class="gold-border-center"></div>
-            <div id="alertMessage" style="margin-bottom:15px;"></div>
+    <script>
+        const SUPABASE_URL = 'https://trswmahvppkvpwhtbiyw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyc3dtYWh2cHBrdnB3aHRiaXl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTIwNzAsImV4cCI6MjA5NTEyODA3MH0.fgBA1qFZwn9KEYc78Odwj83j9Pq61igbStRYYNRwywc';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const msg = document.getElementById('message');
 
-            <div class="form-group"><label>Full Name</label><input type="text" id="fullName" required></div>
-            <div class="form-group"><label>Email Address</label><input type="email" id="email" required></div>
-            <div class="form-group"><label>Phone Number</label><input type="tel" id="phone"></div>
-            <div class="form-group"><label>Password</label><input type="password" id="password" required></div>
-            <div class="form-group"><label>Confirm Password</label><input type="password" id="confirmPassword" required></div>
-
-            <!-- Use onclick on a button (no form) to avoid page reload -->
-            <button class="btn btn-primary" style="width:100%" onclick="handleSignup()">Sign Up</button>
-
-            <p style="text-align:center; margin-top:20px">Already have an account? <a href="login.html" style="color:var(--gold)">Login here</a></p>
-        </div>
-    </div>
-</main>
-
-<footer><div class="container"><div class="footer-content"><div class="footer-col"><div class="logo">Homely<span>Exquisite</span></div><p>Expression of style & beauty — established 18 years ago.</p></div><div class="footer-col"><h4>Quick Links</h4><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="login.html">Login</a></div><div class="footer-col"><h4>Contact</h4><a href="tel:07065229950">0706 522 9950</a><a href="tel:08084202903">0808 420 2903</a></div></div><div class="copyright"><p>© 2025 Homely Exquisite Furniture. 18 years of excellence.</p></div></div></footer>
-
-<script>
-    // Supabase configuration
-    const SUPABASE_URL = 'https://trswmahvppkvpwhtbiyw.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyc3dtYWh2cHBrdnB3aHRiaXl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTIwNzAsImV4cCI6MjA5NTEyODA3MH0.fgBA1qFZwn9KEYc78Odwj83j9Pq61igbStRYYNRwywc';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    async function handleSignup() {
-        // Get values
-        const fullName = document.getElementById('fullName').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const password = document.getElementById('password').value;
-        const confirm = document.getElementById('confirmPassword').value;
-        const alertDiv = document.getElementById('alertMessage');
-
-        // Clear previous alert
-        alertDiv.innerHTML = '';
-
-        // Validation
-        if (!fullName || !email || !password) {
-            alertDiv.innerHTML = '<div class="alert error">Please fill all required fields</div>';
-            return;
-        }
-        if (password !== confirm) {
-            alertDiv.innerHTML = '<div class="alert error">Passwords do not match</div>';
-            return;
-        }
-        if (password.length < 6) {
-            alertDiv.innerHTML = '<div class="alert error">Password must be at least 6 characters</div>';
-            return;
-        }
-
-        // Disable button to prevent double-click
-        const btn = document.querySelector('button[onclick="handleSignup()"]');
-        btn.disabled = true;
-        btn.innerHTML = 'Creating...';
-
-        try {
-            // Step 1: Sign up with Supabase Auth
-            const { data, error } = await supabase.auth.signUp({
-                email,
-                password,
-                options: { data: { full_name: fullName, phone } }
-            });
-            if (error) throw error;
-
-            if (!data.user) throw new Error('Signup failed – no user returned');
-
-            // Step 2: Insert profile into 'profiles' table
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .insert([{
-                    id: data.user.id,
-                    email: email,
-                    full_name: fullName,
-                    phone: phone,
-                    is_admin: false
-                }]);
-
-            if (profileError) {
-                console.error('Profile insert error:', profileError);
-                alertDiv.innerHTML = `<div class="alert error">Profile creation failed: ${profileError.message}</div>`;
-                btn.disabled = false;
-                btn.innerHTML = 'Sign Up';
+        document.getElementById('signupBtn').onclick = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            if (!email || !password) {
+                msg.innerHTML = '<span class="error">Please fill both fields</span>';
                 return;
             }
-
-            // Success
-            alertDiv.innerHTML = '<div class="alert success">Account created! Redirecting to login...</div>';
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 1500);
-        } catch (err) {
-            console.error('Signup error:', err);
-            alertDiv.innerHTML = `<div class="alert error">${err.message}</div>`;
+            msg.innerHTML = 'Attempting signup...';
+            const btn = document.getElementById('signupBtn');
+            btn.disabled = true;
+            try {
+                const { data, error } = await supabase.auth.signUp({ email, password });
+                if (error) throw error;
+                msg.innerHTML = `<span class="success">Success! User ID: ${data.user.id}. Check Supabase Auth → Users.</span>`;
+            } catch (err) {
+                msg.innerHTML = `<span class="error">Error: ${err.message}</span>`;
+            }
             btn.disabled = false;
-            btn.innerHTML = 'Sign Up';
-        }
-    }
-
-    // Mobile menu toggle
-    document.getElementById('menuBtn').addEventListener('click', () => {
-        document.getElementById('navLinks').classList.toggle('show');
-    });
-</script>
+        };
+    </script>
 </body>
 </html>
