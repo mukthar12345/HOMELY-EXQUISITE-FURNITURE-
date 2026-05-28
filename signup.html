@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sign Up | Homely Exquisite</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sign Up | Homely Exquisite</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"><link rel="stylesheet" href="style.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
 <body>
 <header><div class="container"><nav><div class="logo">Homely<span>Exquisite</span></div><button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button><ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="shop.html">Shop</a></li><li><a href="login.html">Login</a></li><li><a href="signup.html" class="active">Sign Up</a></li></ul></nav></div></header>
 <main><div class="container"><div class="form-container"><h2 style="text-align:center">Create <span class="gold-text">Account</span></h2><div class="gold-border-center"></div><div id="alertMessage"></div>
@@ -19,7 +19,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 document.getElementById('signupBtn').onclick = async () => {
-    alert('1: Button clicked');
     const fullName = document.getElementById('fullName').value.trim();
     const email = document.getElementById('email').value.trim();
     const phone = document.getElementById('phone').value.trim();
@@ -27,44 +26,31 @@ document.getElementById('signupBtn').onclick = async () => {
     const confirm = document.getElementById('confirmPassword').value;
     const alertDiv = document.getElementById('alertMessage');
     alertDiv.innerHTML = '';
-
-    if (password !== confirm) {
-        alert('Passwords do not match');
-        alertDiv.innerHTML = '<div class="alert error">Passwords do not match</div>';
-        return;
-    }
-    if (password.length < 6) {
-        alert('Password too short');
-        alertDiv.innerHTML = '<div class="alert error">Password must be at least 6 characters</div>';
-        return;
-    }
-    alert('2: Validation passed. Calling supabase.auth.signUp...');
+    if (password !== confirm) { alertDiv.innerHTML = '<div class="alert error">Passwords do not match</div>'; return; }
+    if (password.length < 6) { alertDiv.innerHTML = '<div class="alert error">Password must be at least 6 characters</div>'; return; }
     const btn = document.getElementById('signupBtn');
     btn.disabled = true; btn.innerHTML = 'Creating...';
     try {
-        const { data, error } = await supabase.auth.signUp({
+        // Step 1: Sign up
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email,
             password,
             options: { data: { full_name: fullName, phone } }
         });
-        if (error) throw error;
-        alert('3: Signup API succeeded. User ID: ' + data.user.id);
-        if (data.user) {
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .insert([{ id: data.user.id, email, full_name: fullName, phone, is_admin: false }]);
-            if (profileError) {
-                alert('4: Profile insert error: ' + profileError.message);
-                throw new Error('Profile insert failed');
-            } else {
-                alert('5: Profile inserted successfully');
-            }
-        }
-        alertDiv.innerHTML = '<div class="alert success">Account created! Redirecting...</div>';
-        alert('6: Redirecting to login.html');
+        if (signUpError) throw signUpError;
+        if (!signUpData.user) throw new Error('Signup failed – no user returned');
+        // Step 2: Auto-login to get a session (so RLS will allow profile insert)
+        const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+        if (loginError) throw loginError;
+        // Step 3: Now insert profile (user is authenticated)
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([{ id: signUpData.user.id, email, full_name: fullName, phone, is_admin: false }]);
+        if (profileError) throw profileError;
+        alertDiv.innerHTML = '<div class="alert success">Account created! Redirecting to login...</div>';
         setTimeout(() => { window.location.href = 'login.html'; }, 1500);
     } catch (err) {
-        alert('ERROR: ' + err.message);
+        console.error(err);
         alertDiv.innerHTML = `<div class="alert error">${err.message}</div>`;
         btn.disabled = false; btn.innerHTML = 'Sign Up';
     }
