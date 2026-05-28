@@ -1,57 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Minimal Supabase Signup Test</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Signup Test</title>
 </head>
 <body>
     <h2>Signup Test</h2>
-    <div>
-        <input type="email" id="email" placeholder="Email" style="width:250px">
-        <input type="password" id="pass" placeholder="Password" style="width:150px">
+    <div id="status">Loading Supabase...</div>
+    <div id="form" style="display:none;">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="pass" placeholder="Password">
         <button id="btn">Sign Up</button>
     </div>
-    <div id="result" style="margin-top:20px; font-family:monospace; white-space:pre-wrap; background:#eee; padding:10px;"></div>
+    <div id="result" style="margin-top:20px; white-space:pre-wrap; font-family:monospace;"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://trswmahvppkvpwhtbiyw.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyc3dtYWh2cHBrdnB3aHRiaXl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTIwNzAsImV4cCI6MjA5NTEyODA3MH0.fgBA1qFZwn9KEYc78Odwj83j9Pq61igbStRYYNRwywc';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const statusDiv = document.getElementById('status');
+        const formDiv = document.getElementById('form');
         const resultDiv = document.getElementById('result');
 
-        function log(msg) {
-            resultDiv.innerHTML += msg + '\n';
+        // Check if supabase loaded
+        if (typeof supabase !== 'undefined') {
+            statusDiv.innerHTML = '✅ Supabase loaded. Ready.';
+            formDiv.style.display = 'block';
+        } else {
+            statusDiv.innerHTML = '❌ Supabase NOT loaded. Check internet or try a different browser.';
         }
 
-        document.getElementById('btn').onclick = async () => {
-            resultDiv.innerHTML = '';
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
-            if (!email || !pass) {
-                log('Please enter email and password');
-                return;
-            }
-            log('Signing up with email: ' + email);
-            try {
-                const { data, error } = await supabase.auth.signUp({ email, password: pass });
-                if (error) throw error;
-                log('Success! User ID: ' + data.user.id);
-                log('Now checking if profile was created...');
-                const { data: profile, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', data.user.id)
-                    .single();
-                if (profileError) {
-                    log('Profile NOT found. Error: ' + profileError.message);
-                } else {
-                    log('Profile found: ' + JSON.stringify(profile));
+        // Only add event listener if supabase exists
+        if (typeof supabase !== 'undefined') {
+            const SUPABASE_URL = 'https://trswmahvppkvpwhtbiyw.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyc3dtYWh2cHBrdnB3aHRiaXl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTIwNzAsImV4cCI6MjA5NTEyODA3MH0.fgBA1qFZwn9KEYc78Odwj83j9Pq61igbStRYYNRwywc';
+            const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            document.getElementById('btn').onclick = async () => {
+                const email = document.getElementById('email').value.trim();
+                const pass = document.getElementById('pass').value;
+                resultDiv.innerHTML = '';
+                if (!email || !pass) {
+                    resultDiv.innerHTML = 'Please enter email and password.';
+                    return;
                 }
-                log('Test complete. You can now log in.');
-            } catch (err) {
-                log('ERROR: ' + err.message);
-            }
-        };
+                resultDiv.innerHTML = 'Attempting signup for: ' + email + '\n';
+                try {
+                    const { data, error } = await supabaseClient.auth.signUp({ email, password: pass });
+                    if (error) throw error;
+                    resultDiv.innerHTML += '✅ Signup API succeeded. User ID: ' + data.user.id + '\n';
+                    // Try to insert profile (optional)
+                    const { error: profileError } = await supabaseClient
+                        .from('profiles')
+                        .insert([{ id: data.user.id, email, full_name: 'Test', is_admin: false }]);
+                    if (profileError) {
+                        resultDiv.innerHTML += '⚠️ Profile insert error: ' + profileError.message + '\n';
+                    } else {
+                        resultDiv.innerHTML += '✅ Profile inserted.\n';
+                    }
+                    resultDiv.innerHTML += '🎉 Signup complete! You can now log in.';
+                } catch (err) {
+                    resultDiv.innerHTML += '❌ ERROR: ' + err.message;
+                }
+            };
+        }
     </script>
 </body>
 </html>
