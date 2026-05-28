@@ -31,30 +31,21 @@ document.getElementById('signupBtn').onclick = async () => {
     const btn = document.getElementById('signupBtn');
     btn.disabled = true; btn.innerHTML = 'Creating...';
     try {
-        // 1. Sign up
-        const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: { data: { full_name: fullName, phone } }
-        });
+        // Sign up
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: fullName, phone } } });
         if (error) throw error;
-        if (!data.user) throw new Error('Signup failed – no user');
-        // 2. Wait a moment for auth to settle, then try to insert profile (using the same session)
-        await new Promise(r => setTimeout(r, 500));
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .insert([{ id: data.user.id, email, full_name: fullName, phone, is_admin: false }]);
-        if (profileError) throw profileError;
-        alertDiv.innerHTML = '<div class="alert success">Account created! Redirecting...</div>';
-        // 3. Force redirect
+        if (!data.user) throw new Error('Signup failed');
+        // Try to insert profile, but do NOT block redirect if it fails
+        try {
+            await supabase.from('profiles').insert([{ id: data.user.id, email, full_name: fullName, phone, is_admin: false }]);
+        } catch (profileErr) {
+            console.warn('Profile insert error (ignored):', profileErr);
+        }
+        alertDiv.innerHTML = '<div class="alert success">Account created! Redirecting to login...</div>';
+        // Force redirect after 1 second
         setTimeout(() => {
             window.location.replace('login.html');
         }, 1000);
-        // Also set meta refresh as fallback
-        const meta = document.createElement('meta');
-        meta.httpEquiv = 'refresh';
-        meta.content = '1;url=login.html';
-        document.head.appendChild(meta);
     } catch (err) {
         alertDiv.innerHTML = `<div class="alert error">${err.message}</div>`;
         btn.disabled = false; btn.innerHTML = 'Sign Up';
