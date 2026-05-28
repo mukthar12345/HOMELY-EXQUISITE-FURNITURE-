@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Debugger</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #0A1128; color: #eee; }
+        input, button { display: block; margin: 10px 0; padding: 8px; width: 250px; }
+        .log { background: #1a2a4f; padding: 10px; border-radius: 5px; margin-top: 20px; white-space: pre-wrap; }
+        .error { color: #ff8888; }
+        .success { color: #88ff88; }
+    </style>
+</head>
+<body>
+    <h2>Signup Debugger</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="pass" placeholder="Password">
+    <input type="text" id="name" placeholder="Full Name">
+    <button id="btn">Sign Up</button>
+    <div class="log" id="log"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://trswmahvppkvpwhtbiyw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyc3dtYWh2cHBrdnB3aHRiaXl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTIwNzAsImV4cCI6MjA5NTEyODA3MH0.fgBA1qFZwn9KEYc78Odwj83j9Pq61igbStRYYNRwywc';
+        
+        function log(msg, isError) {
+            const logDiv = document.getElementById('log');
+            const line = document.createElement('div');
+            line.textContent = new Date().toLocaleTimeString() + ': ' + msg;
+            if (isError) line.style.color = '#ff8888';
+            else line.style.color = '#88ff88';
+            logDiv.appendChild(line);
+        }
+
+        document.getElementById('btn').onclick = async () => {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML = '';
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('pass').value;
+            const name = document.getElementById('name').value.trim();
+            
+            if (!email || !password || !name) {
+                log('❌ Missing email/password/name', true);
+                return;
+            }
+            log('✅ Inputs provided');
+            
+            // Check if Supabase loaded
+            if (typeof supabase === 'undefined') {
+                log('❌ Supabase client not loaded! Check internet or CDN.', true);
+                return;
+            }
+            log('✅ Supabase client loaded');
+            
+            const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            log('✅ Client created');
+            
+            log('Attempting signup for ' + email);
+            try {
+                const { data, error } = await client.auth.signUp({
+                    email,
+                    password,
+                    options: { data: { full_name: name } }
+                });
+                if (error) throw error;
+                log('✅ Signup API succeeded. User ID: ' + data.user.id);
+                log('✅ You can now log in.');
+                // Try to insert profile (optional)
+                try {
+                    const { error: profileError } = await client
+                        .from('profiles')
+                        .insert([{ id: data.user.id, email, full_name: name, is_admin: false }]);
+                    if (profileError) log('⚠️ Profile insert failed (RLS) but account exists: ' + profileError.message, true);
+                    else log('✅ Profile inserted');
+                } catch (e) { log('⚠️ Profile insert exception: ' + e.message, true); }
+                log('🎉 Account created successfully! Now go to login page.');
+            } catch (err) {
+                log('❌ ERROR: ' + err.message, true);
+            }
+        };
+    </script>
+</body>
+</html>
