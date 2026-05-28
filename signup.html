@@ -10,6 +10,10 @@
 <div class="form-group"><label>Password</label><input type="password" id="password" required></div>
 <div class="form-group"><label>Confirm Password</label><input type="password" id="confirmPassword" required></div>
 <button id="signupBtn" class="btn btn-primary" style="width:100%">Sign Up</button>
+<div id="manualRedirect" style="display:none; margin-top:20px; text-align:center;">
+    <p class="success">✅ Account created successfully!</p>
+    <a href="login.html" class="btn btn-primary">Click here to Login</a>
+</div>
 <p style="text-align:center; margin-top:20px">Already have an account? <a href="login.html" style="color:var(--gold)">Login here</a></p>
 </div></div></main>
 <footer><div class="container"><div class="footer-content"><div class="footer-col"><div class="logo">Homely<span>Exquisite</span></div><p>Expression of style & beauty — established 18 years ago.</p></div><div class="footer-col"><h4>Quick Links</h4><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="login.html">Login</a></div><div class="footer-col"><h4>Contact</h4><a href="tel:07065229950">0706 522 9950</a><a href="tel:08084202903">0808 420 2903</a></div></div><div class="copyright"><p>© 2025 Homely Exquisite Furniture. 18 years of excellence.</p></div></div></footer>
@@ -25,27 +29,25 @@ document.getElementById('signupBtn').onclick = async () => {
     const password = document.getElementById('password').value;
     const confirm = document.getElementById('confirmPassword').value;
     const alertDiv = document.getElementById('alertMessage');
+    const manualDiv = document.getElementById('manualRedirect');
     alertDiv.innerHTML = '';
+    manualDiv.style.display = 'none';
     if (password !== confirm) { alertDiv.innerHTML = '<div class="alert error">Passwords do not match</div>'; return; }
     if (password.length < 6) { alertDiv.innerHTML = '<div class="alert error">Password must be at least 6 characters</div>'; return; }
     const btn = document.getElementById('signupBtn');
     btn.disabled = true; btn.innerHTML = 'Creating...';
     try {
-        // Sign up
         const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: fullName, phone } } });
         if (error) throw error;
         if (!data.user) throw new Error('Signup failed');
-        // Try to insert profile, but do NOT block redirect if it fails
+        // Try to insert profile (ignore errors)
         try {
             await supabase.from('profiles').insert([{ id: data.user.id, email, full_name: fullName, phone, is_admin: false }]);
-        } catch (profileErr) {
-            console.warn('Profile insert error (ignored):', profileErr);
-        }
-        alertDiv.innerHTML = '<div class="alert success">Account created! Redirecting to login...</div>';
-        // Force redirect after 1 second
-        setTimeout(() => {
-            window.location.replace('login.html');
-        }, 1000);
+        } catch (e) { console.log('Profile insert skipped:', e); }
+        // Show success message and manual login button
+        alertDiv.innerHTML = '<div class="alert success">Account created successfully!</div>';
+        manualDiv.style.display = 'block';
+        btn.style.display = 'none'; // hide signup button after success
     } catch (err) {
         alertDiv.innerHTML = `<div class="alert error">${err.message}</div>`;
         btn.disabled = false; btn.innerHTML = 'Sign Up';
