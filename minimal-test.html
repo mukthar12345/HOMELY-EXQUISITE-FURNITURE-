@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Supabase Signup Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h2>Signup Test</h2>
+    <div>
+        <input type="email" id="email" placeholder="Email" style="width:250px">
+        <input type="password" id="pass" placeholder="Password" style="width:150px">
+        <button id="btn">Sign Up</button>
+    </div>
+    <div id="result" style="margin-top:20px; font-family:monospace; white-space:pre-wrap; background:#eee; padding:10px;"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://trswmahvppkvpwhtbiyw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyc3dtYWh2cHBrdnB3aHRiaXl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTIwNzAsImV4cCI6MjA5NTEyODA3MH0.fgBA1qFZwn9KEYc78Odwj83j9Pq61igbStRYYNRwywc';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const resultDiv = document.getElementById('result');
+
+        function log(msg) {
+            resultDiv.innerHTML += msg + '\n';
+        }
+
+        document.getElementById('btn').onclick = async () => {
+            resultDiv.innerHTML = '';
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            if (!email || !pass) {
+                log('Please enter email and password');
+                return;
+            }
+            log('Signing up with email: ' + email);
+            try {
+                const { data, error } = await supabase.auth.signUp({ email, password: pass });
+                if (error) throw error;
+                log('Success! User ID: ' + data.user.id);
+                log('Now checking if profile was created...');
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', data.user.id)
+                    .single();
+                if (profileError) {
+                    log('Profile NOT found. Error: ' + profileError.message);
+                } else {
+                    log('Profile found: ' + JSON.stringify(profile));
+                }
+                log('Test complete. You can now log in.');
+            } catch (err) {
+                log('ERROR: ' + err.message);
+            }
+        };
+    </script>
+</body>
+</html>
