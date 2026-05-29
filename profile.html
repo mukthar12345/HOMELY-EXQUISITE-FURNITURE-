@@ -9,12 +9,10 @@
 async function loadProfile() {
     const user = await checkUser();
     if (!user) { window.location.href = 'login.html'; return; }
-    const profile = await getUserProfile();
-    if (profile) {
-        document.getElementById('fullName').value = profile.full_name || '';
-        document.getElementById('phone').value = profile.phone || '';
-        document.getElementById('address').value = profile.address || '';
-    }
+    const metadata = user.user_metadata || {};
+    document.getElementById('fullName').value = metadata.full_name || '';
+    document.getElementById('phone').value = metadata.phone || '';
+    document.getElementById('address').value = metadata.address || '';
     const orders = await getUserOrders();
     const historyDiv = document.getElementById('purchaseHistory');
     if (orders.length === 0) historyDiv.innerHTML = '<p>No purchases yet.</p>';
@@ -24,8 +22,14 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const user = await checkUser();
     if (!user) return;
-    const { error } = await supabase.from('profiles').update({ full_name: document.getElementById('fullName').value, phone: document.getElementById('phone').value, address: document.getElementById('address').value }).eq('id', user.id);
-    if (error) showAlert('Error', 'error'); else showAlert('Profile updated', 'success');
+    const fullName = document.getElementById('fullName').value;
+    const phone = document.getElementById('phone').value;
+    const address = document.getElementById('address').value;
+    const { error } = await supabase.auth.updateUser({
+        data: { full_name: fullName, phone, address }
+    });
+    if (error) showAlert('Error updating profile', 'error');
+    else showAlert('Profile updated successfully', 'success');
 });
 function showAlert(msg, type) { const div = document.getElementById('alertMessage'); div.innerHTML = `<div class="alert ${type}">${msg}</div>`; setTimeout(() => div.innerHTML = '', 3000); }
 document.getElementById('logoutBtn').onclick = (e) => { e.preventDefault(); logOut(); };
