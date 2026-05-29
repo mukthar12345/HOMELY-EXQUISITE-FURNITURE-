@@ -44,6 +44,7 @@ document.getElementById('signupBtn').onclick = async () => {
         });
         if (error) throw error;
         if (!data.user) throw new Error('Signup failed');
+        // Success – show manual login button (no automatic redirect)
         alertDiv.innerHTML = '';
         successBox.style.display = 'block';
         btn.style.display = 'none';
