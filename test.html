@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Signup Test - Find the Problem</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background: #0A1128; color: #EAEAEA; font-family: monospace; padding: 20px; }
+        button { background: #D4AF37; color: #0A1128; border: none; padding: 8px 15px; cursor: pointer; }
+        input, button { margin: 5px 0; }
+        .log { background: #14223d; padding: 15px; border-radius: 5px; white-space: pre-wrap; margin-top: 20px; }
+        .error { color: #ff8888; }
+        .success { color: #88ff88; }
+    </style>
+</head>
+<body>
+    <h2>🔍 Single Diagnostic Test</h2>
+    <p>Enter a <strong>brand new email</strong> (never used before) and any password (min 6 chars).</p>
+    <input type="email" id="email" placeholder="Email (new)">
+    <input type="password" id="pass" placeholder="Password">
+    <input type="text" id="name" placeholder="Full Name">
+    <button id="run">▶ Start Test</button>
+    <div id="log" class="log">Waiting for test...</div>
+
+    <script>
+        const SUPABASE_URL = 'https://trswmahvppkvpwhtbiyw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyc3dtYWh2cHBrdnB3aHRiaXl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTIwNzAsImV4cCI6MjA5NTEyODA3MH0.fgBA1qFZwn9KEYc78Odwj83j9Pq61igbStRYYNRwywc';
+        const logDiv = document.getElementById('log');
+
+        function addLog(msg, isError = false) {
+            const p = document.createElement('div');
+            p.textContent = new Date().toLocaleTimeString() + ': ' + msg;
+            if (isError) p.style.color = '#ff8888';
+            else p.style.color = '#88ff88';
+            logDiv.appendChild(p);
+            console.log(msg);
+        }
+
+        document.getElementById('run').onclick = async () => {
+            logDiv.innerHTML = '';
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('pass').value;
+            const name = document.getElementById('name').value.trim();
+
+            if (!email || !password || !name) {
+                addLog('❌ Please fill all fields.', true);
+                return;
+            }
+
+            addLog('✅ Step 1: Supabase client loaded? ' + (typeof supabase !== 'undefined' ? 'YES' : 'NO'));
+            if (typeof supabase === 'undefined') {
+                addLog('❌ Supabase client not loaded. Check internet or CDN.', true);
+                return;
+            }
+
+            const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            addLog('✅ Step 2: Supabase client created.');
+
+            addLog('✅ Step 3: Attempting signup for ' + email);
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: { data: { full_name: name } }
+                });
+                if (error) throw error;
+                addLog('✅ Step 4: Signup API succeeded. User ID: ' + data.user.id);
+                addLog('🎉 SUCCESS! Account created. You can now log in.');
+                addLog('👉 Go to login.html and use this email/password.');
+                document.getElementById('run').disabled = true;
+            } catch (err) {
+                addLog('❌ Step 4: Signup FAILED. Error: ' + err.message, true);
+                if (err.message.includes('rate limit')) {
+                    addLog('🔁 Rate limit – wait 10 minutes or use a different email/network.', true);
+                } else if (err.message.includes('User already registered')) {
+                    addLog('🔁 This email already exists. Use a brand new email.', true);
+                } else if (err.message.includes('fetch')) {
+                    addLog('🔁 Network or CORS error. Your GitHub Pages may be blocked. Try Netlify.', true);
+                }
+            }
+        };
+    </script>
+</body>
+</html>
