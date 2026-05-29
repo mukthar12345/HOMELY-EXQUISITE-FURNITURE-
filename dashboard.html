@@ -13,7 +13,7 @@
     <button id="adminOrdersBtn" style="display:none" class="btn btn-primary" onclick="showSection('adminOrdersSection')"><i class="fas fa-users"></i> All Customer Orders (CEO)</button>
 </div>
 
-<!-- Cart Subpage (customer) – includes order form, payment, delivery estimate -->
+<!-- Cart Subpage -->
 <div id="cartSection" class="dashboard-section">
     <h3>Your Cart</h3>
     <div id="cartItems"></div>
@@ -43,7 +43,7 @@
 <!-- CEO: Add Products -->
 <div id="adminProductsSection" class="dashboard-section" style="display:none"><h3>Add New Product</h3><div class="form-container" style="max-width:600px; margin:0 auto"><form id="addProductForm"><div class="form-group"><label>Product Name</label><input type="text" id="productName" required></div><div class="form-group"><label>Category</label><select id="productCategory"><option value="interior">Interior</option><option value="exterior">Exterior</option></select></div><div class="form-group"><label>Price (₦)</label><input type="number" id="productPrice" required></div><div class="form-group"><label>Image URL</label><input type="url" id="productImage" placeholder="https://..." required></div><div class="form-group"><label>Badge (e.g., Best Seller, New)</label><input type="text" id="productBadge"></div><div class="form-group"><label>Stock Quantity</label><input type="number" id="productStock" value="10"></div><div class="form-group"><label>Description</label><textarea id="productDescription" rows="3"></textarea></div><button type="submit" class="btn btn-primary" style="width:100%">Add Product</button></form></div><h3>Manage Existing Products</h3><div id="adminProductsList"></div></div>
 
-<!-- CEO: All Customer Orders (with map and notifications) -->
+<!-- CEO: All Customer Orders -->
 <div id="adminOrdersSection" class="dashboard-section" style="display:none"><h3>All Customer Orders (CEO)</h3><div id="notificationsPanel" style="background:var(--navy); padding:10px; border-radius:10px; margin-bottom:20px;"></div><div id="adminOrdersList"></div></div>
 
 </div></main>
@@ -53,8 +53,8 @@ let currentUser = null, isAdminUser = false, notificationInterval = null;
 async function init() {
     currentUser = await checkUser();
     if (!currentUser) { window.location.href = 'login.html'; return; }
-    const profile = await getUserProfile();
-    isAdminUser = profile?.is_admin === true;
+    // Get admin status from user metadata (no profiles table)
+    isAdminUser = currentUser.user_metadata?.is_admin === true;
     if (isAdminUser) { 
         document.getElementById('adminProductsBtn').style.display = 'inline-block'; 
         document.getElementById('adminOrdersBtn').style.display = 'inline-block'; 
@@ -133,8 +133,15 @@ async function loadUserOrders() {
     container.innerHTML = orders.map(order => `<div class="dashboard-card"><p><strong>Order #:</strong> ${order.order_number}</p><p><strong>Total:</strong> ₦${order.total.toLocaleString()}</p><p><strong>Status:</strong> <span class="gold-text">${order.status}</span></p><p><strong>Est. Delivery:</strong> ${order.estimated_delivery || 'N/A'}</p><p><strong>Date:</strong> ${new Date(order.created_at).toLocaleDateString()}</p></div>`).join('');
 }
 async function loadProfileSummary() {
-    const profile = await getUserProfile();
-    if (profile) document.getElementById('profileInfo').innerHTML = `<p><strong>Name:</strong> ${profile.full_name || 'N/A'}</p><p><strong>Email:</strong> ${profile.email || currentUser.email}</p><p><strong>Phone:</strong> ${profile.phone || 'N/A'}</p>`;
+    const user = await checkUser();
+    if (user) {
+        const metadata = user.user_metadata || {};
+        document.getElementById('profileInfo').innerHTML = `
+            <p><strong>Name:</strong> ${metadata.full_name || 'N/A'}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Phone:</strong> ${metadata.phone || 'N/A'}</p>
+        `;
+    }
 }
 async function loadAdminProducts() {
     const products = await getProducts('all');
