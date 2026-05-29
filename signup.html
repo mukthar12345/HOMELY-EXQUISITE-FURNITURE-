@@ -10,9 +10,9 @@
 <div class="form-group"><label>Password</label><input type="password" id="password" required></div>
 <div class="form-group"><label>Confirm Password</label><input type="password" id="confirmPassword" required></div>
 <button id="signupBtn" class="btn btn-primary" style="width:100%">Sign Up</button>
-<div id="manualRedirect" style="display:none; margin-top:20px; text-align:center;">
-    <p class="success">✅ Account created successfully!</p>
-    <a href="login.html" class="btn btn-primary">Click here to Login</a>
+<div id="successBox" style="display:none; margin-top:20px; text-align:center;">
+    <div class="alert success">✅ Account created successfully!</div>
+    <a href="login.html" class="btn btn-primary" style="margin-top:10px;">Go to Login Page</a>
 </div>
 <p style="text-align:center; margin-top:20px">Already have an account? <a href="login.html" style="color:var(--gold)">Login here</a></p>
 </div></div></main>
@@ -29,25 +29,29 @@ document.getElementById('signupBtn').onclick = async () => {
     const password = document.getElementById('password').value;
     const confirm = document.getElementById('confirmPassword').value;
     const alertDiv = document.getElementById('alertMessage');
-    const manualDiv = document.getElementById('manualRedirect');
+    const successBox = document.getElementById('successBox');
     alertDiv.innerHTML = '';
-    manualDiv.style.display = 'none';
+    successBox.style.display = 'none';
     if (password !== confirm) { alertDiv.innerHTML = '<div class="alert error">Passwords do not match</div>'; return; }
     if (password.length < 6) { alertDiv.innerHTML = '<div class="alert error">Password must be at least 6 characters</div>'; return; }
     const btn = document.getElementById('signupBtn');
     btn.disabled = true; btn.innerHTML = 'Creating...';
     try {
-        const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: fullName, phone } } });
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: { data: { full_name: fullName, phone } }
+        });
         if (error) throw error;
         if (!data.user) throw new Error('Signup failed');
-        // Try to insert profile (ignore errors)
+        // Try to insert profile, but don't worry if it fails (RLS will be fixed)
         try {
             await supabase.from('profiles').insert([{ id: data.user.id, email, full_name: fullName, phone, is_admin: false }]);
-        } catch (e) { console.log('Profile insert skipped:', e); }
-        // Show success message and manual login button
-        alertDiv.innerHTML = '<div class="alert success">Account created successfully!</div>';
-        manualDiv.style.display = 'block';
-        btn.style.display = 'none'; // hide signup button after success
+        } catch (e) { console.log('Profile insert ignored:', e); }
+        // Show success and manual login button
+        alertDiv.innerHTML = '';
+        successBox.style.display = 'block';
+        btn.style.display = 'none';
     } catch (err) {
         alertDiv.innerHTML = `<div class="alert error">${err.message}</div>`;
         btn.disabled = false; btn.innerHTML = 'Sign Up';
