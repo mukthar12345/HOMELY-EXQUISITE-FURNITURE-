@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Contact | Homely Exquisite Furniture">
+    <meta property="og:description" content="Get in touch with ALEX MOMOH - Premium Furniture CEO">
+    <title>Contact | Homely Exquisite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <nav class="navbar">
+            <a href="index.html" class="logo"><i class="fas fa-home"></i> Homely<span>Exquisite</span></a>
+            <div class="nav-menu-wrapper">
+                <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html" class="active">Contact</a></li>
+                    <li id="dashLink" style="display:none;"><a href="dashboard.html"><i class="fas fa-user"></i> Dashboard</a></li>
+                    <li id="wishLink" style="display:none;"><a href="wishlist.html"><i class="fas fa-heart"></i> Wishlist</a></li>
+                    <li id="adminLink" style="display:none;"><a href="ceo-dashboard.html"><i class="fas fa-crown"></i> Admin</a></li>
+                    <li id="logoutLink" style="display:none;"><a href="#" onclick="logOut()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    <li id="loginLink"><a href="login.html" class="btn">Login</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<section class="section">
+    <div class="container">
+        <h2>Get in <span class="gold-text">Touch</span></h2>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1000px; margin: 50px auto;">
+            <!-- CONTACT FORM -->
+            <div>
+                <h3>Send us a Message</h3>
+                <div id="contactAlert"></div>
+                
+                <form onsubmit="sendMessage(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Your Name *</label>
+                        <input type="text" id="contactName" placeholder="John Doe" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Your Email *</label>
+                        <input type="email" id="contactEmail" placeholder="john@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Your Phone</label>
+                        <input type="tel" id="contactPhone" placeholder="0706 522 9950">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-heading"></i> Subject *</label>
+                        <input type="text" id="contactSubject" placeholder="Order inquiry, Product question, etc." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-comment"></i> Message *</label>
+                        <textarea id="contactMessage" placeholder="Tell us what you're looking for..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px;">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+
+            <!-- CONTACT INFO -->
+            <div>
+                <h3>Contact Information</h3>
+                
+                <div class="card" style="margin-bottom: 20px;">
+                    <h4 style="color: var(--gold); margin-bottom: 15px;">
+                        <i class="fas fa-crown"></i> CEO: ALEX MOMOH
+                    </h4>
+                    <p style="color: #999; margin-bottom: 10px;">
+                        Premium Furniture | 18+ Years Excellence
+                    </p>
+                </div>
+
+                <div class="card" style="margin-bottom: 20px;">
+                    <p style="margin-bottom: 15px;">
+                        <i class="fas fa-map-marker-alt" style="color: var(--gold); margin-right: 10px;"></i>
+                        <strong>Location:</strong>
+                    </p>
+                    <p style="color: #999;">Magboro, Oke Afa<br>Ogun State, Nigeria</p>
+                </div>
+
+                <div class="card" style="margin-bottom: 20px;">
+                    <p style="margin-bottom: 15px;">
+                        <i class="fas fa-phone" style="color: var(--gold); margin-right: 10px;"></i>
+                        <strong>Phone:</strong>
+                    </p>
+                    <p style="color: var(--gold); font-weight: 700;">0706 522 9950</p>
+                </div>
+
+                <div class="card" style="margin-bottom: 20px;">
+                    <p style="margin-bottom: 15px;">
+                        <i class="fas fa-comment-dots" style="color: var(--gold); margin-right: 10px;"></i>
+                        <strong>WhatsApp:</strong>
+                    </p>
+                    <p style="color: #999;">Quick replies via WhatsApp</p>
+                    <a href="https://wa.me/2347065229950" class="btn" style="width: 100%; text-align: center; margin-top: 10px;">
+                        <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                    </a>
+                </div>
+
+                <div class="card" style="margin-bottom: 20px;">
+                    <p style="margin-bottom: 15px;">
+                        <i class="fas fa-envelope" style="color: var(--gold); margin-right: 10px;"></i>
+                        <strong>Email:</strong>
+                    </p>
+                    <p style="color: var(--gold); font-weight: 700;">alexandermohmoh122@gmail.com</p>
+                </div>
+
+                <div class="card" style="background: rgba(212,175,55,0.1); border-left: 4px solid var(--gold);">
+                    <h4 style="color: var(--gold); margin-bottom: 15px;">
+                        <i class="fas fa-clock"></i> Business Hours
+                    </h4>
+                    <p style="margin: 8px 0;"><strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM</p>
+                    <p style="margin: 8px 0;"><strong>Saturday:</strong> 10:00 AM - 5:00 PM</p>
+                    <p style="margin: 8px 0; color: var(--gold);"><strong>Sunday:</strong> Closed</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ SECTION -->
+        <div style="max-width: 800px; margin: 60px auto;">
+            <h3 style="text-align: center; margin-bottom: 30px;">Frequently Asked <span class="gold-text">Questions</span></h3>
+            
+            <div id="faqContainer"></div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <h4>Homely Exquisite</h4>
+                <p>Premium Furniture | CEO: ALEX MOMOH</p>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Support</h4>
+                <p><i class="fas fa-phone"></i> 0706 522 9950</p>
+                <p><i class="fas fa-comment"></i> WhatsApp Support</p>
+            </div>
+        </div>
+        <div style="text-align: center; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 20px; margin-top: 30px;">
+            <p>&copy; 2024 Homely Exquisite | Premium Furniture Excellence</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+<script>
+const faqData = [
+    {
+        q: "What are your delivery times?",
+        a: "We deliver within 7-10 business days to most locations in Nigeria. Express delivery available for urgent orders."
+    },
+    {
+        q: "Do you offer warranty on furniture?",
+        a: "Yes! All products come with a 1-year warranty covering manufacturing defects."
+    },
+    {
+        q: "Can I return or exchange items?",
+        a: "We offer 14 days return policy if items are in original condition and packaging."
+    },
+    {
+        q: "What payment methods do you accept?",
+        a: "We accept Paystack payments, bank transfers, and cash on delivery in selected areas."
+    },
+    {
+        q: "Do you have a physical showroom?",
+        a: "Yes! Visit us at Magboro, Ogun State. Contact us for directions and appointments."
+    },
+    {
+        q: "How do I track my order?",
+        a: "After checkout, you'll receive an order number. Use it to track your delivery in real-time."
+    }
+];
+
+function initializeFAQ() {
+    const container = document.getElementById('faqContainer');
+    container.innerHTML = faqData.map((item, idx) => `
+        <div class="card" style="margin-bottom: 15px; cursor: pointer;" onclick="toggleFAQ(this)">
+            <p style="color: var(--gold); font-weight: 700; margin-bottom: 8px;">
+                <i class="fas fa-chevron-right" style="margin-right: 10px;"></i>${item.q}
+            </p>
+            <p style="display: none; color: #999; margin-top: 10px;">${item.a}</p>
+        </div>
+    `).join('');
+}
+
+function toggleFAQ(element) {
+    const answer = element.querySelector('p:last-child');
+    answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+    const icon = element.querySelector('i');
+    icon.style.transform = answer.style.display === 'none' ? 'rotate(0deg)' : 'rotate(90deg)';
+    icon.style.transition = 'transform 0.3s';
+}
+
+function showAlert(msg, type = 'success') {
+    const box = document.getElementById('contactAlert');
+    const div = document.createElement('div');
+    div.className = `alert ${type}`;
+    div.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${msg}`;
+    box.innerHTML = '';
+    box.appendChild(div);
+    setTimeout(() => div.remove(), 4000);
+}
+
+function sendMessage(e) {
+    e.preventDefault();
+    const name = document.getElementById('contactName').value;
+    const email = document.getElementById('contactEmail').value;
+    const phone = document.getElementById('contactPhone').value;
+    const subject = document.getElementById('contactSubject').value;
+    const message = document.getElementById('contactMessage').value;
+
+    if(!name || !email || !subject || !message) {
+        showAlert('Please fill all required fields', 'error');
+        return;
+    }
+
+    // Simulate sending (in production, use backend)
+    console.log({name, email, phone, subject, message});
+    
+    showAlert('✅ Message sent! We\'ll get back to you shortly.', 'success');
+    
+    // Reset form
+    document.querySelector('form').reset();
+    
+    // Send to WhatsApp (optional automation)
+    const whatsappMsg = `Hi ALEX MOMOH, my name is ${name}. ${message}. Please contact me at ${email} or ${phone}`;
+    const whatsappURL = `https://wa.me/2347065229950?text=${encodeURIComponent(whatsappMsg)}`;
+    // Uncomment to auto-open WhatsApp: window.open(whatsappURL, '_blank');
+}
+
+document.getElementById('menuToggle').addEventListener('click', () => {
+    document.getElementById('navLinks').classList.toggle('active');
+});
+
+async function updateNavbar() {
+    try {
+        const user = await checkUser();
+        if(user) {
+            const profile = await getUserProfile();
+            document.getElementById('loginLink').style.display = 'none';
+            document.getElementById('dashLink').style.display = 'block';
+            document.getElementById('wishLink').style.display = 'block';
+            document.getElementById('logoutLink').style.display = 'block';
+            if(profile.is_admin) document.getElementById('adminLink').style.display = 'block';
+        }
+    } catch(err) {}
+}
+
+setTimeout(() => {
+    updateNavbar();
+    initializeFAQ();
+}, 1000);
+</script>
+
+</body>
+</html>

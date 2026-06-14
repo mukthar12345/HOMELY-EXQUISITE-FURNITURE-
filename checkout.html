@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Homely Exquisite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <style>
+        .checkout-step { background: var(--navy-light); padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(212,175,55,0.2); }
+        .step-title { color: var(--gold); font-size: 18px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .step-number { background: var(--gold); color: var(--navy); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .form-group-co { margin-bottom: 15px; }
+        .form-group-co label { display: block; color: #eaeaea; font-weight: 600; margin-bottom: 8px; }
+        .form-group-co input, .form-group-co select { width: 100%; padding: 12px; background: var(--navy); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; color: #eaeaea; font-size: 14px; }
+        .form-group-co input::placeholder { color: rgba(234,234,234,0.5); }
+        .payment-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
+        .payment-card { padding: 20px; background: var(--navy); border: 2px solid rgba(212,175,55,0.3); border-radius: 10px; cursor: pointer; text-align: center; transition: all 0.3s; }
+        .payment-card:hover { border-color: var(--gold); background: rgba(212,175,55,0.05); }
+        .payment-card.selected { border-color: var(--gold); background: rgba(212,175,55,0.2); }
+        .payment-card i { font-size: 32px; color: var(--gold); margin-bottom: 10px; display: block; }
+        .payment-card p { color: #eaeaea; font-weight: 700; margin: 0; }
+        .order-box { background: rgba(212,175,55,0.1); padding: 20px; border-radius: 12px; border-left: 4px solid var(--gold); }
+        .order-item-co { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(212,175,55,0.2); }
+        .order-item-co:last-child { border-bottom: none; }
+        .summary-row { display: flex; justify-content: space-between; padding: 10px 0; }
+        .total-row { font-size: 20px; font-weight: 700; color: var(--gold); padding-top: 15px; border-top: 2px solid rgba(212,175,55,0.3); margin-top: 15px; }
+        .bank-info { background: rgba(52,152,219,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #3498db; margin: 15px 0; }
+        .bank-info strong { color: #3498db; }
+        .upload-area { border: 2px dashed var(--gold); padding: 30px; border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .upload-area:hover { background: rgba(212,175,55,0.1); }
+        .upload-area i { font-size: 40px; color: var(--gold); margin-bottom: 10px; display: block; }
+        .btn-submit { width: 100%; padding: 16px; background: var(--gold); color: var(--navy); border: none; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 20px; transition: all 0.3s; }
+        .btn-submit:hover { background: #f5d76e; }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+        @media (max-width: 768px) {
+            .payment-choices { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <nav class="navbar">
+            <a href="index.html" class="logo"><i class="fas fa-home"></i> Homely<span>Exquisite</span></a>
+            <div class="nav-menu-wrapper">
+                <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="#" onclick="logOut()">Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<section class="section">
+    <div class="container">
+        <h2><i class="fas fa-credit-card"></i> Checkout</h2>
+        <p style="text-align: center; color: #999; margin-bottom: 30px;">Complete your order</p>
+
+        <div id="checkoutAlert"></div>
+
+        <!-- STEP 1: DELIVERY -->
+        <div class="checkout-step">
+            <div class="step-title">
+                <span class="step-number">1</span>
+                Delivery Address
+            </div>
+            <div class="form-group-co">
+                <label>Full Name *</label>
+                <input type="text" id="fullName" placeholder="Your full name">
+            </div>
+            <div class="form-group-co">
+                <label>Email *</label>
+                <input type="email" id="email" placeholder="your@email.com">
+            </div>
+            <div class="form-group-co">
+                <label>Phone *</label>
+                <input type="tel" id="phone" placeholder="0706 522 9950">
+            </div>
+            <div class="form-group-co">
+                <label>Delivery Address *</label>
+                <input type="text" id="address" placeholder="Street address, city, state">
+            </div>
+        </div>
+
+        <!-- STEP 2: PAYMENT METHOD -->
+        <div class="checkout-step">
+            <div class="step-title">
+                <span class="step-number">2</span>
+                Payment Method
+            </div>
+            <div class="payment-choices">
+                <div class="payment-card selected" onclick="selectPayment('paystack')">
+                    <i class="fas fa-credit-card"></i>
+                    <p>Paystack</p>
+                    <small style="color: #999;">Card Payment</small>
+                </div>
+                <div class="payment-card" onclick="selectPayment('bank')">
+                    <i class="fas fa-university"></i>
+                    <p>Bank Transfer</p>
+                    <small style="color: #999;">Direct Transfer</small>
+                </div>
+            </div>
+
+            <!-- PAYSTACK METHOD -->
+            <div id="paystackContent" style="display: block;">
+                <div style="background: rgba(52,152,219,0.1); padding: 15px; border-radius: 8px; color: #5dade2; border-left: 4px solid #3498db;">
+                    <i class="fas fa-lock"></i> Secure payment via Paystack. Your card is encrypted and safe.
+                </div>
+            </div>
+
+            <!-- BANK TRANSFER METHOD -->
+            <div id="bankContent" style="display: none;">
+                <div class="bank-info">
+                    <strong>🏦 Transfer to this account:</strong><br>
+                    Bank: <strong>UBA (United Bank for Africa)</strong><br>
+                    Name: <strong>Homely Exquisite Furniture</strong><br>
+                    Account: <strong>1028324802</strong><br>
+                    Amount: <strong id="bankAmount">₦0</strong>
+                </div>
+                <div class="form-group-co">
+                    <label>Upload Receipt *</label>
+                    <label class="upload-area" onclick="document.getElementById('proofFile').click()">
+                        <i class="fas fa-camera"></i>
+                        <p>Take photo or select receipt</p>
+                        <small style="color: #999;">Screenshot or photo of bank transfer proof</small>
+                    </label>
+                    <input type="file" id="proofFile" accept="image/*" style="display: none;">
+                    <p id="proofFileName" style="color: var(--gold); font-size: 12px; margin-top: 10px;"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3: ORDER SUMMARY -->
+        <div class="checkout-step">
+            <div class="step-title">
+                <span class="step-number">3</span>
+                Order Summary
+            </div>
+            <div class="order-box">
+                <div id="orderItems"></div>
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">₦0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping:</span>
+                    <span>₦5,000</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax (7.5%):</span>
+                    <span id="tax">₦0</span>
+                </div>
+                <div class="summary-row total-row">
+                    <span>Total:</span>
+                    <span id="total">₦0</span>
+                </div>
+            </div>
+
+            <button class="btn-submit" id="submitBtn" onclick="completePayment()">
+                <i class="fas fa-lock"></i> Complete Payment
+            </button>
+            <p style="text-align: center; font-size: 12px; color: #999; margin-top: 15px;">
+                ✅ Secure | 🔒 Encrypted | 📞 Support: 0706 522 9950
+            </p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div style="text-align: center;">
+            <p><strong>Homely Exquisite Furniture</strong> | CEO: ALEX MOMOH</p>
+            <p style="font-size: 12px; color: var(--gold);">18 Years Excellence</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+<script>
+let paymentMethod = 'paystack';
+let cartItems = [];
+let cartTotal = 0;
+let proofFileData = null;
+
+async function initCheckout() {
+    const user = await checkUser();
+    if(!user) { window.location.href = 'login.html'; return; }
+
+    document.getElementById('menuToggle').addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.toggle('active');
+    });
+
+    document.getElementById('proofFile').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                proofFileData = evt.target.result;
+                document.getElementById('proofFileName').textContent = '✅ ' + file.name;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    const profile = await getUserProfile();
+    document.getElementById('fullName').value = profile.full_name || '';
+    document.getElementById('email').value = user.email || '';
+    document.getElementById('phone').value = profile.phone || '';
+
+    await loadCheckoutCart();
+}
+
+async function loadCheckoutCart() {
+    try {
+        const cart = await getCart();
+        cartItems = cart;
+
+        if(!cartItems || cartItems.length === 0) {
+            showCheckoutAlert('Your cart is empty! Redirecting to shop...', 'error');
+            setTimeout(() => { window.location.href = 'shop.html'; }, 2000);
+            return;
+        }
+
+        let subtotal = 0;
+        const itemsHTML = cartItems.map(item => {
+            const product = item.products || item;
+            const itemTotal = (product.price || 0) * item.quantity;
+            subtotal += itemTotal;
+            return `
+                <div class="order-item-co">
+                    <span>${product.name} x${item.quantity}</span>
+                    <span>₦${itemTotal.toLocaleString()}</span>
+                </div>
+            `;
+        }).join('');
+
+        document.getElementById('orderItems').innerHTML = itemsHTML;
+
+        const shipping = 5000;
+        const taxAmount = Math.round((subtotal + shipping) * 0.075);
+        cartTotal = subtotal + shipping + taxAmount;
+
+        document.getElementById('subtotal').textContent = '₦' + subtotal.toLocaleString();
+        document.getElementById('tax').textContent = '₦' + taxAmount.toLocaleString();
+        document.getElementById('total').textContent = '₦' + cartTotal.toLocaleString();
+        document.getElementById('bankAmount').textContent = '₦' + cartTotal.toLocaleString();
+
+    } catch(err) {
+        showCheckoutAlert('Error loading cart', 'error');
+    }
+}
+
+function selectPayment(method) {
+    paymentMethod = method;
+
+    document.querySelectorAll('.payment-card').forEach(card => card.classList.remove('selected'));
+    event.target.closest('.payment-card').classList.add('selected');
+
+    if(method === 'paystack') {
+        document.getElementById('paystackContent').style.display = 'block';
+        document.getElementById('bankContent').style.display = 'none';
+    } else {
+        document.getElementById('paystackContent').style.display = 'none';
+        document.getElementById('bankContent').style.display = 'block';
+    }
+}
+
+async function completePayment() {
+    const fullName = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const address = document.getElementById('address').value.trim();
+
+    if(!fullName || !email || !phone || !address) {
+        showCheckoutAlert('Please fill all required fields', 'error');
+        return;
+    }
+
+    if(!validateEmail(email)) {
+        showCheckoutAlert('Invalid email address', 'error');
+        return;
+    }
+
+    if(paymentMethod === 'bank' && !proofFileData) {
+        showCheckoutAlert('Please upload payment proof', 'error');
+        return;
+    }
+
+    try {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spin"></span> Processing...';
+
+        const orderData = {
+            customer_name: fullName,
+            customer_phone: phone,
+            shipping_address: address,
+            payment_method: paymentMethod,
+            payment_proof: paymentMethod === 'bank' ? proofFileData : null,
+            items: cartItems,
+            total: cartTotal
+        };
+
+        if(paymentMethod === 'paystack') {
+            processPaystack(orderData, email);
+        } else {
+            const order = await createOrder(orderData);
+            showCheckoutAlert('✅ Order created! Redirecting...', 'success');
+            setTimeout(() => {
+                window.location.href = `order-tracking.html?id=${order.id}`;
+            }, 2000);
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-lock"></i> Complete Payment';
+
+    } catch(err) {
+        showCheckoutAlert('Error: ' + err.message, 'error');
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').innerHTML = '<i class="fas fa-lock"></i> Complete Payment';
+    }
+}
+
+function processPaystack(orderData, email) {
+    try {
+        const handler = PaystackPop.setup({
+            key: 'pk_test_51234567890', // REPLACE WITH REAL KEY
+            email: email,
+            amount: cartTotal * 100,
+            currency: 'NGN',
+            ref: 'HEF-' + Math.random().toString(36).substr(2, 9),
+            onClose: function() {
+                showCheckoutAlert('Payment cancelled', 'error');
+            },
+            onSuccess: async function(response) {
+                try {
+                    const order = await createOrder(orderData);
+                    showCheckoutAlert('✅ Payment successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = `order-tracking.html?id=${order.id}`;
+                    }, 2000);
+                } catch(err) {
+                    showCheckoutAlert('Order error: ' + err.message, 'error');
+                }
+            }
+        });
+        handler.openIframe();
+    } catch(err) {
+        showCheckoutAlert('Payment error: ' + err.message, 'error');
+    }
+}
+
+function showCheckoutAlert(msg, type = 'success') {
+    const box = document.getElementById('checkoutAlert');
+    const div = document.createElement('div');
+    div.className = `alert ${type}`;
+    div.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${msg}`;
+    box.innerHTML = '';
+    box.appendChild(div);
+    if(type !== 'success') setTimeout(() => div.remove(), 5000);
+}
+
+setTimeout(initCheckout, 1000);
+</script>
+
+</body>
+</html>

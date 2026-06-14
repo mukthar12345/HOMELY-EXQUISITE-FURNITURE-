@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homely Exquisite | Premium Furniture - CEO: ALEX MOMOH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <nav class="navbar">
+            <a href="index.html" class="logo"><i class="fas fa-home"></i> Homely<span>Exquisite</span></a>
+            <div class="nav-menu-wrapper">
+                <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li id="dashLink" style="display:none;"><a href="dashboard.html"><i class="fas fa-user"></i> Dashboard</a></li>
+                    <li id="wishLink" style="display:none;"><a href="wishlist.html"><i class="fas fa-heart"></i> Wishlist</a></li>
+                    <li id="adminLink" style="display:none;"><a href="ceo-dashboard.html"><i class="fas fa-crown"></i> Admin</a></li>
+                    <li id="logoutLink" style="display:none;"><a href="#" onclick="logOut()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    <li id="loginLink"><a href="login.html" class="btn">Login</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Luxury <span class="gold-text">Furniture</span> for Your Home</h1>
+            <p>Premium furniture crafted with excellence by ALEX MOMOH | 18 Years of Furniture Mastery</p>
+            <a href="shop.html" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> Shop Now</a>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2>Why Choose <span class="gold-text">Homely Exquisite</span></h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-truck"></i>
+                <h3>Fast Delivery</h3>
+                <p>Delivered within 7 days to your doorstep</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-lock"></i>
+                <h3>Secure Payment</h3>
+                <p>100% secure with Paystack</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-star"></i>
+                <h3>Premium Quality</h3>
+                <p>18 Years Excellence - CEO: ALEX MOMOH</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-headset"></i>
+                <h3>24/7 Support</h3>
+                <p>WhatsApp: 0706 522 9950</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2>Featured <span class="gold-text">Products</span></h2>
+        <div class="products-grid" id="featuredProducts">
+            <div style="grid-column:1/-1;text-align:center;padding:40px;color:#999;">Loading...</div>
+        </div>
+    </div>
+</section>
+
+<section class="testimonials">
+    <div class="container">
+        <h2>Customer <span class="gold-text">Reviews</span></h2>
+        <div class="testimonials-grid">
+            <div class="testimonial">
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <p>"Excellent quality furniture and very professional service. CEO ALEX MOMOH really cares about customer satisfaction."</p>
+                <p><strong>- Chioma O.</strong></p>
+            </div>
+            <div class="testimonial">
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <p>"Best furniture shopping experience. Fast delivery and genuine products. Highly recommended!"</p>
+                <p><strong>- Tunde A.</strong></p>
+            </div>
+            <div class="testimonial">
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <p>"18 years of excellence is evident in every piece. This is my go-to furniture store."</p>
+                <p><strong>- Funmi E.</strong></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="container">
+        <h2>Ready to Transform Your Home?</h2>
+        <p>Explore our premium collection curated by ALEX MOMOH with 18 years of expertise</p>
+        <a href="shop.html" class="btn btn-primary">Start Shopping Now</a>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <h4>Homely Exquisite</h4>
+                <p>Premium Furniture | CEO: ALEX MOMOH</p>
+                <p style="font-size: 12px; color: var(--gold);">18 Years of Excellence</p>
+                <div class="social-links">
+                    <a href="https://wa.me/2347065229950" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="tel:+2347065229950" title="Call"><i class="fas fa-phone"></i></a>
+                    <a href="mailto:alexandermohmoh122@gmail.com"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Support</h4>
+                <p>📞 0706 522 9950</p>
+                <p>💬 WhatsApp Support</p>
+                <p>📧 alexandermohmoh122@gmail.com</p>
+            </div>
+            <div>
+                <h4>Business Info</h4>
+                <p><strong>CEO:</strong> Kolawole Mudasiru Amazat (ALEX MOMOH)</p>
+                <p><strong>Location:</strong> Magboro, Oke Afa, Ogun State</p>
+                <p><strong>Experience:</strong> 18+ Years</p>
+            </div>
+        </div>
+        <div style="text-align: center; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 20px; margin-top: 30px;">
+            <p>&copy; 2024 Homely Exquisite | Professional Development | CEO: ALEX MOMOH</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+document.getElementById('menuToggle').addEventListener('click', () => {
+    document.getElementById('navLinks').classList.toggle('active');
+});
+
+async function updateNavbar() {
+    try {
+        const user = await checkUser();
+        if (user) {
+            const profile = await getUserProfile();
+            document.getElementById('loginLink').style.display = 'none';
+            document.getElementById('dashLink').style.display = 'block';
+            document.getElementById('wishLink').style.display = 'block';
+            document.getElementById('logoutLink').style.display = 'block';
+            if (profile.is_admin) document.getElementById('adminLink').style.display = 'block';
+        }
+    } catch (err) {}
+}
+
+async function loadFeaturedProducts() {
+    try {
+        const products = await getProducts('all', 6);
+        const container = document.getElementById('featuredProducts');
+        if (products.length === 0) {
+            container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#999;">Loading products...</div>';
+            return;
+        }
+        container.innerHTML = products.map(p => `
+            <div class="product-card" onclick="window.location.href='product-detail.html?id=${p.id}'">
+                <div class="product-img" style="background-image:url('${p.image_url||'https://via.placeholder.com/300x250?text=Furniture'}')">
+                    <span class="product-badge">${p.badge||'New'}</span>
+                </div>
+                <div class="product-info">
+                    <h3>${p.name}</h3>
+                    <div class="price">₦${(p.price||0).toLocaleString()}</div>
+                    <button class="btn" style="width:100%;" onclick="event.stopPropagation();window.location.href='product-detail.html?id=${p.id}'">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+setTimeout(() => {
+    updateNavbar();
+    loadFeaturedProducts();
+}, 1000);
+</script>
+
+</body>
+</html>

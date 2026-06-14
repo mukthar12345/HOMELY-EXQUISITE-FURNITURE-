@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Shop Premium Furniture | Homely Exquisite">
+    <meta property="og:description" content="Premium furniture collection by CEO ALEX MOMOH. 18 Years Excellence in Nigerian Furniture.">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630?text=Homely+Exquisite">
+    <meta property="og:url" content="https://homelyfurniture.com/shop">
+    <title>Shop | Homely Exquisite - ALEX MOMOH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <nav class="navbar">
+            <a href="index.html" class="logo"><i class="fas fa-home"></i> Homely<span>Exquisite</span></a>
+            <div class="nav-menu-wrapper">
+                <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html" class="active">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li id="dashLink" style="display:none;"><a href="dashboard.html"><i class="fas fa-user"></i> Dashboard</a></li>
+                    <li id="wishLink" style="display:none;"><a href="wishlist.html"><i class="fas fa-heart"></i> Wishlist</a></li>
+                    <li id="adminLink" style="display:none;"><a href="ceo-dashboard.html"><i class="fas fa-crown"></i> Admin</a></li>
+                    <li id="logoutLink" style="display:none;"><a href="#" onclick="logOut()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    <li id="loginLink"><a href="login.html" class="btn">Login</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<section class="section">
+    <div class="container">
+        <h2>Shop Our <span class="gold-text">Collection</span></h2>
+
+        <div style="margin-bottom: 30px; display: flex; gap: 15px; flex-wrap: wrap;">
+            <input type="text" id="searchInput" placeholder="Search products..." style="flex: 1; min-width: 200px; padding: 12px 15px; background: var(--navy-light); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; color: #eaeaea;">
+            <select id="categorySelect" style="padding: 12px 15px; background: var(--navy-light); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; color: #eaeaea; font-family: 'Inter', sans-serif;">
+                <option value="all">All Categories</option>
+                <option value="furniture">Furniture</option>
+                <option value="interior">Interior Design</option>
+                <option value="outdoor">Outdoor</option>
+                <option value="decor">Decor</option>
+            </select>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #999;">
+                <div class="spin"></div> <p style="margin-top: 15px;">Loading products...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <h4>Homely Exquisite</h4>
+                <p>Premium Furniture | CEO: ALEX MOMOH</p>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Support</h4>
+                <p>📞 0706 522 9950</p>
+                <p>💬 WhatsApp</p>
+            </div>
+        </div>
+        <div style="text-align: center; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 20px; margin-top: 30px;">
+            <p>&copy; 2024 Homely Exquisite | CEO: ALEX MOMOH</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+<script>
+let allProducts = [];
+
+function getStockBadge(stock) {
+    if(stock === 0) return { text: 'Out of Stock', color: '#dc3545', bg: 'rgba(220,53,69,0.15)' };
+    if(stock < 5) return { text: `Only ${stock} Left`, color: '#ffc107', bg: 'rgba(255,193,7,0.15)' };
+    return { text: 'In Stock', color: '#28a745', bg: 'rgba(40,167,69,0.15)' };
+}
+
+function displayProducts(products) {
+    const grid = document.getElementById('productsGrid');
+    if(products.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #999;">No products found</div>';
+        return;
+    }
+
+    grid.innerHTML = products.map(p => {
+        const badge = getStockBadge(p.stock);
+        return `
+            <div class="product-card">
+                <div class="product-img" style="background-image: url('${p.image_url || 'https://via.placeholder.com/300x250?text=Furniture'}'); position: relative;">
+                    <button class="product-wishlist" onclick="toggleWishlist(${p.id}, event)"><i class="fas fa-heart"></i></button>
+                    <div style="position: absolute; top: 10px; right: 10px; background: ${badge.bg}; color: ${badge.color}; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
+                        ${badge.text}
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3>${p.name}</h3>
+                    <p style="font-size: 12px; color: #999; margin: 5px 0;">${p.category}</p>
+                    <div class="price">₦${(p.price || 0).toLocaleString()}</div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" style="flex: 1; padding: 10px; font-size: 12px;" onclick="buyNow(${p.id}, event)">
+                            <i class="fas fa-shopping-cart"></i> Buy Now
+                        </button>
+                        <button class="btn" style="flex: 1; padding: 10px; font-size: 12px;" onclick="viewProduct(${p.id}, event)">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function loadShop() {
+    try {
+        allProducts = await getProducts('all', 100);
+        displayProducts(allProducts);
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+async function toggleWishlist(productId, event) {
+    event.stopPropagation();
+    try {
+        const user = await checkUser();
+        if(!user) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const isIn = await isItemInWishlist(productId);
+        if(isIn) {
+            await removeFromWishlist(productId);
+            event.target.closest('button').classList.remove('active');
+        } else {
+            await addToWishlist(productId);
+            event.target.closest('button').classList.add('active');
+        }
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+async function buyNow(productId, event) {
+    event.stopPropagation();
+    try {
+        const user = await checkUser();
+        if(!user) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const product = await getProductById(productId);
+        if(!product || product.stock === 0) {
+            alert('Product out of stock');
+            return;
+        }
+
+        await addToCart(productId, 1);
+        window.location.href = 'checkout.html';
+    } catch(err) {
+        alert('Error: ' + err.message);
+    }
+}
+
+function viewProduct(productId, event) {
+    event.stopPropagation();
+    window.location.href = `product-detail.html?id=${productId}`;
+}
+
+async function updateNavbar() {
+    try {
+        const user = await checkUser();
+        if(user) {
+            const profile = await getUserProfile();
+            document.getElementById('loginLink').style.display = 'none';
+            document.getElementById('dashLink').style.display = 'block';
+            document.getElementById('wishLink').style.display = 'block';
+            document.getElementById('logoutLink').style.display = 'block';
+            if(profile.is_admin) document.getElementById('adminLink').style.display = 'block';
+        }
+    } catch(err) {}
+}
+
+document.getElementById('menuToggle').addEventListener('click', () => {
+    document.getElementById('navLinks').classList.toggle('active');
+});
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query));
+    displayProducts(filtered);
+});
+
+document.getElementById('categorySelect').addEventListener('change', (e) => {
+    const category = e.target.value;
+    if(category === 'all') {
+        displayProducts(allProducts);
+    } else {
+        const filtered = allProducts.filter(p => p.category === category);
+        displayProducts(filtered);
+    }
+});
+
+setTimeout(() => {
+    updateNavbar();
+    loadShop();
+}, 1000);
+</script>
+
+</body>
+</html>
